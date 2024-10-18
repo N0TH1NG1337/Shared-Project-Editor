@@ -119,8 +119,8 @@ class c_render:
         offset = 0
         for c in text:
             self._draw_list.add_text( 
-                position.x - text_size[ 0 ] / 2 + offset, 
-                position.y - text_size[ 1 ] / 2, 
+                position.x - text_size.x / 2 + offset, 
+                position.y - text_size.y / 2, 
                 clr( ), 
                 c 
             )
@@ -164,20 +164,29 @@ class c_render:
         # Text pad to find where last char located
         text_pad = 0
 
+        imgui.push_font( font )
+
         # Loop through each character
         for char in text:
 
             # Render each character
-            self.text( font, position + vector( text_pad, 0 ), color( r1, g1, b1, a1 ), char )
+            self._draw_list.add_text( 
+                position.x + text_pad, 
+                position.y, 
+                color( r1, g1, b1, a1 )( ), 
+                char 
+            )
 
             # Populate the pad for next cha
-            text_pad = text_pad + self.measure_text( font, char ).x
+            text_pad = text_pad + imgui.calc_text_size( char )[ 0 ]
 
             # Change the color for the next char
             r1 = r1 + percentage.r
             g1 = g1 + percentage.g
             b1 = b1 + percentage.b
             a1 = a1 + percentage.a
+
+        imgui.pop_font( )
 
     def rect( self, position: vector, end_position: vector, clr: color, roundness: int = 0 ) -> None:
         """
