@@ -36,6 +36,9 @@ class c_render:
 
         self._draw_list = imgui.get_background_draw_list( )
 
+        gl.glBegin(gl.GL_TRIANGLES)
+    
+
     def push_clip_rect( self, position: vector, end_position: vector ) -> None:
         """
             Push start vector and end vector to clip area,
@@ -56,17 +59,24 @@ class c_render:
             Measures and returns a vector of text size based on custom font
         """
 
+        # TODO ! ADD OPTION TO CACHE SIZES BASED ON TEXT
+
         # Push font
         imgui.push_font( font )
 
         # Use calculate text size by Imgui (returns a tuple)
-        text_size = imgui.calc_text_size( text )
+        result = vector( )
+        result.y = imgui.calc_text_size( text )[ 1 ]
+
+        result.x = 0
+        for c in text:
+            result.x += imgui.calc_text_size( c )[ 0 ]
 
         # Pop font
         imgui.pop_font( )
 
         # Return size as vector
-        return vector( ).raw( text_size )
+        return result
     
     def image( self, img: c_image, position: vector, clr: color, size: vector = None ) -> None:
         """
@@ -86,7 +96,7 @@ class c_render:
             col=clr( )
         )
 
-    def text( self, font: any, position: vector, clr: color, text: str, flags: str = "" ) -> tuple:
+    def text( self, font: any, position: vector, clr: color, text: str, flags: str = "" ) -> vector:
         """
             Renders text with custom fond.
             can also use flags
@@ -95,21 +105,27 @@ class c_render:
             - "c" will center the text
         """
 
+        # WARNING ! FULL TEXT WIDTH WILL BE SHOERTER THAN EACH CHAR RENDER
+
         # Push font
         imgui.push_font( font )
 
         # Use to center text
-        text_size = ( 0, 0 )
+        text_size = vector( )
         if 'c' in flags:
-            text_size = imgui.calc_text_size( text )
+            text_size = self.measure_text( font, text )
 
         # Draw text
-        self._draw_list.add_text( 
-            position.x - text_size[ 0 ] / 2, 
-            position.y - text_size[ 1 ] / 2, 
-            clr( ), 
-            text 
-        )
+        offset = 0
+        for c in text:
+            self._draw_list.add_text( 
+                position.x - text_size[ 0 ] / 2 + offset, 
+                position.y - text_size[ 1 ] / 2, 
+                clr( ), 
+                c 
+            )
+
+            offset += imgui.calc_text_size( c )[ 0 ]
 
         # Pop font
         imgui.pop_font( )
