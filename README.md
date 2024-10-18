@@ -18,7 +18,7 @@ pip install pillow
 
 ## Change Log
 ```txt
-date : 16/10/2024
+date : 18/10/2024
 
 | action        | name                  | type      | description
 - Added         c_text_input            class       a single line text input
