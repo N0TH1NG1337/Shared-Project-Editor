@@ -184,6 +184,8 @@ class c_ui:
         fonts: dict = self._data[ "fonts" ]
         fonts[ index ] = new_font
 
+        self._impl.refresh_font_texture( )
+
         return new_font
     
     @safe_call( None )
@@ -199,13 +201,6 @@ class c_ui:
         images[ index ] = new_img
 
         return new_img
-
-    def refrash_textures( self ) -> None:
-        """
-            Must be called after new fonts / images have been created
-        """
-
-        self._impl.refresh_font_texture( )
 
     def font( self, index: str ) -> any:
         """
